@@ -20,6 +20,7 @@ namespace NexusForever.WorldServer.Database.Character.Model
             CharacterSpell = new HashSet<CharacterSpell>();
             CharacterTitle = new HashSet<CharacterTitle>();
             Item = new HashSet<Item>();
+            CharacterReputation = new HashSet<CharacterReputation>();
         }
 
         public ulong Id { get; set; }
@@ -57,5 +58,6 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public virtual ICollection<CharacterSpell> CharacterSpell { get; set; }
         public virtual ICollection<CharacterTitle> CharacterTitle { get; set; }
         public virtual ICollection<Item> Item { get; set; }
+        public ICollection<CharacterReputation> CharacterReputation { get; set; }
     }
 }

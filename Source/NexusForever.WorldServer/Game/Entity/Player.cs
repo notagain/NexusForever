@@ -104,8 +104,10 @@ namespace NexusForever.WorldServer.Game.Entity
         public SpellManager SpellManager { get; }
         public CostumeManager CostumeManager { get; }
         public PetCustomisationManager PetCustomisationManager { get; }
+        public ReputationManager ReputationManager { get; }
 
         public VendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
+        public WorldSession Session { get; }
 
         private double timeToSave = SaveDuration;
         private PlayerSaveMask saveMask;
@@ -143,6 +145,7 @@ namespace NexusForever.WorldServer.Game.Entity
             TitleManager    = new TitleManager(this, model);
             SpellManager    = new SpellManager(this, model);
             PetCustomisationManager = new PetCustomisationManager(this, model);
+            ReputationManager = new ReputationManager(this, model);
 
             Stats.Add(Stat.Level, new StatValue(Stat.Level, level));
 
@@ -318,10 +321,25 @@ namespace NexusForever.WorldServer.Game.Entity
                     playerCreate.Money[i - 1] = currency.Amount;
             }
 
-            foreach (Item item in Inventory
+            uint[] reputationArray = new uint[]
+            {
+                (uint)Faction.Dominion, 533
+            };
+            for (uint i = 0; i < reputationArray.Length; i++)
+            {
+                Reputation reputation = ReputationManager.GetReputation(reputationArray[i]);
+                playerCreate.FactionData.FactionReputations.Add(new ServerPlayerCreate.Faction.FactionReputation
+                {
+                    FactionId = (ushort)reputationArray[i],
+                    Value = reputation.Value > 0 ? (float)reputation.Value : 1000f
+                });
+            }
+
+            foreach (Bag bag in Inventory)
+            {
+                foreach (Item item in Inventory
                 .Where(b => b.Location != InventoryLocation.Ability)
                 .SelectMany(i => i))
-            {
                 playerCreate.Inventory.Add(new InventoryItem
                 {
                     Item   = item.BuildNetworkItem(),
@@ -595,6 +613,7 @@ namespace NexusForever.WorldServer.Game.Entity
             TitleManager.Save(context);
             CostumeManager.Save(context);
             PetCustomisationManager.Save(context);
+            ReputationManager.Save(context);
             SpellManager.Save(context);
         }
 

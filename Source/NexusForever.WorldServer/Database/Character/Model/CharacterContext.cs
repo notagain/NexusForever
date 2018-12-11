@@ -30,6 +30,7 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public virtual DbSet<CharacterPath> CharacterPath { get; set; }
         public virtual DbSet<CharacterPetCustomisation> CharacterPetCustomisation { get; set; }
         public virtual DbSet<CharacterPetFlair> CharacterPetFlair { get; set; }
+        public virtual DbSet<CharacterReputation> CharacterReputation { get; set; }
         public virtual DbSet<CharacterSpell> CharacterSpell { get; set; }
         public virtual DbSet<CharacterTitle> CharacterTitle { get; set; }
         public virtual DbSet<Item> Item { get; set; }
@@ -452,6 +453,26 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .WithMany(p => p.CharacterPetFlair)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__character_pet_flair_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterReputation>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.FactionId });
+
+                entity.ToTable("character_reputation");
+
+                entity.Property(e => e.FactionId)
+                    .HasColumnName("factionId")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Value)
+                    .HasColumnName("value")
+                    .HasDefaultValueSql("'0'");
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.CharacterReputation)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK_character_faction_id__character_id");
             });
 
             modelBuilder.Entity<CharacterSpell>(entity =>
