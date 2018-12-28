@@ -11,6 +11,8 @@ namespace NexusForever.WorldServer.Database.Character.Model
             CharacterBone = new HashSet<CharacterBone>();
             CharacterCurrency = new HashSet<CharacterCurrency>();
             CharacterCustomisation = new HashSet<CharacterCustomisation>();
+            CharacterPathEpisode = new HashSet<CharacterPathEpisode>();
+            CharacterPathMission = new HashSet<CharacterPathMission>();
             Item = new HashSet<Item>();
         }
 
@@ -32,6 +34,8 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public ICollection<CharacterBone> CharacterBone { get; set; }
         public ICollection<CharacterCurrency> CharacterCurrency { get; set; }
         public ICollection<CharacterCustomisation> CharacterCustomisation { get; set; }
+        public ICollection<CharacterPathEpisode> CharacterPathEpisode { get; set; }
+        public ICollection<CharacterPathMission> CharacterPathMission { get; set; }
         public ICollection<Item> Item { get; set; }
     }
 }

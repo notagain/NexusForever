@@ -21,6 +21,8 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public virtual DbSet<CharacterBone> CharacterBone { get; set; }
         public virtual DbSet<CharacterCurrency> CharacterCurrency { get; set; }
         public virtual DbSet<CharacterCustomisation> CharacterCustomisation { get; set; }
+        public virtual DbSet<CharacterPathEpisode> CharacterPathEpisode { get; set; }
+        public virtual DbSet<CharacterPathMission> CharacterPathMission { get; set; }
         public virtual DbSet<Item> Item { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -184,6 +186,62 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .WithMany(p => p.CharacterCustomisation)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__character_customisation_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterPathEpisode>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.EpisodeId });
+
+                entity.ToTable("character_path_episode");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.EpisodeId)
+                    .HasColumnName("episodeId")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.RewardReceived)
+                    .HasColumnName("rewardReceived")
+                    .HasDefaultValueSql("'false'");
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.CharacterPathEpisode)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK_character_episode_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterPathMission>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.MissionId });
+
+                entity.ToTable("character_path_mission");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.MissionId)
+                    .HasColumnName("missionId")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Completed)
+                    .HasColumnName("completed")
+                    .HasDefaultValueSql("'false'");
+
+                entity.Property(e => e.Progress)
+                    .HasColumnName("progress")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.State)
+                    .HasColumnName("state")
+                    .HasDefaultValueSql("'0'");
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.CharacterPathMission)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK_character_mission_id__character_id");
             });
 
             modelBuilder.Entity<Item>(entity =>

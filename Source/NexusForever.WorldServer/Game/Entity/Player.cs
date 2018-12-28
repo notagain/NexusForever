@@ -46,6 +46,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
         public Inventory Inventory { get; }
         public CurrencyManager CurrencyManager { get; }
+        public PathMissionManager PathMissionManager { get; }
         public WorldSession Session { get; }
 
         private double timeToSave = SaveDuration;
@@ -67,6 +68,7 @@ namespace NexusForever.WorldServer.Game.Entity
             CurrencyManager = new CurrencyManager(this, model);
             Faction1    = (Faction)model.FactionId;
             Faction2    = (Faction)model.FactionId;
+            PathMissionManager = new PathMissionManager(this, model);
 
             Inventory   = new Inventory(this, model);
             Session     = session;
@@ -156,6 +158,8 @@ namespace NexusForever.WorldServer.Game.Entity
             base.OnAddToMap(map, guid, vector);
 
             SendPacketsAfterAddToMap();
+            PathMissionManager.SetEpisodeProgress();
+            PathMissionManager.SetCurrentZoneEpisode();
 
             Session.EnqueueMessageEncrypted(new ServerPlayerEnteredWorld());
 
@@ -170,7 +174,6 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private void SendPacketsAfterAddToMap()
         {
-            Session.EnqueueMessageEncrypted(new ServerPathLog());
             Session.EnqueueMessageEncrypted(new Server00F1());
             Session.EnqueueMessageEncrypted(new ServerMovementControl
             {
@@ -381,6 +384,7 @@ namespace NexusForever.WorldServer.Game.Entity
             }
             Inventory.Save(context);
             CurrencyManager.Save(context);
+            PathMissionManager.Save(context);
         }
     }
 }

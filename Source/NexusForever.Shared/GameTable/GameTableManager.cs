@@ -302,7 +302,10 @@ namespace NexusForever.Shared.GameTable
         public static GameTable<ModelSequenceByWeaponEntry> ModelSequenceByWeapon { get; private set; }
         public static GameTable<ModelSequenceTransitionEntry> ModelSequenceTransition { get; private set; }
         public static GameTable<ModelSkinFXEntry> ModelSkinFX { get; private set; }
+
+        [GameData]
         public static GameTable<PathEpisodeEntry> PathEpisode { get; private set; }
+
         public static GameTable<PathExplorerActivateEntry> PathExplorerActivate { get; private set; }
         public static GameTable<PathExplorerAreaEntry> PathExplorerArea { get; private set; }
         public static GameTable<PathExplorerDoorEntry> PathExplorerDoor { get; private set; }
@@ -312,7 +315,10 @@ namespace NexusForever.Shared.GameTable
         public static GameTable<PathExplorerScavengerClueEntry> PathExplorerScavengerClue { get; private set; }
         public static GameTable<PathExplorerScavengerHuntEntry> PathExplorerScavengerHunt { get; private set; }
         public static GameTable<PathLevelEntry> PathLevel { get; private set; }
+
+        [GameData]
         public static GameTable<PathMissionEntry> PathMission { get; private set; }
+
         public static GameTable<PathRewardEntry> PathReward { get; private set; }
         public static GameTable<PathScientistCreatureInfoEntry> PathScientistCreatureInfo { get; private set; }
         public static GameTable<PathScientistDatacubeDiscoveryEntry> PathScientistDatacubeDiscovery { get; private set; }
@@ -407,7 +413,7 @@ namespace NexusForever.Shared.GameTable
 
         [GameData]
         public static GameTable<Spell4Entry> Spell4 { get; private set; }
-
+        
         public static GameTable<Spell4AoeTargetConstraintsEntry> Spell4AoeTargetConstraints { get; private set; }
         public static GameTable<Spell4BaseEntry> Spell4Base { get; private set; }
         public static GameTable<Spell4CCConditionsEntry> Spell4CCConditions { get; private set; }
