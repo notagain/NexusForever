@@ -313,6 +313,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 },
                 ActiveCostumeIndex = CostumeIndex
             };
+            playerCreate.FactionData.FactionReputations = ReputationManager.LoadReputations();
 
             for (uint i = 1u; i < 17u; i++)
             {
@@ -321,22 +322,7 @@ namespace NexusForever.WorldServer.Game.Entity
                     playerCreate.Money[i - 1] = currency.Amount;
             }
 
-            // TODO: Implement adding base factions
-            // TODO: Implement faction list check & apply correct factions
             // TODO: Grow Faction Enum
-            uint[] reputationArray = new uint[]
-            {
-                (uint)Faction.Dominion, 533
-            };
-            for (uint i = 0; i < reputationArray.Length; i++)
-            {
-                Reputation reputation = ReputationManager.GetReputation(reputationArray[i]);
-                playerCreate.FactionData.FactionReputations.Add(new ServerPlayerCreate.Faction.FactionReputation
-                {
-                    FactionId = (ushort)reputationArray[i],
-                    Value = reputation.Value
-                });
-            }
 
             foreach (Bag bag in Inventory)
             {
