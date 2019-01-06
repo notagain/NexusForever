@@ -107,7 +107,6 @@ namespace NexusForever.WorldServer.Game.Entity
         public ReputationManager ReputationManager { get; }
 
         public VendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
-        public WorldSession Session { get; }
 
         private double timeToSave = SaveDuration;
         private PlayerSaveMask saveMask;
@@ -322,16 +321,13 @@ namespace NexusForever.WorldServer.Game.Entity
                     playerCreate.Money[i - 1] = currency.Amount;
             }
 
-            // TODO: Grow Faction Enum
-
-            foreach (Bag bag in Inventory)
-            {
-                foreach (Item item in Inventory
+            foreach (Item item in Inventory
                 .Where(b => b.Location != InventoryLocation.Ability)
                 .SelectMany(i => i))
+            {
                 playerCreate.Inventory.Add(new InventoryItem
                 {
-                    Item   = item.BuildNetworkItem(),
+                    Item = item.BuildNetworkItem(),
                     Reason = 49
                 });
             }

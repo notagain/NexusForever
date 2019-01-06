@@ -24,7 +24,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
                 }
             }
 
-            public Faction FactionId { get; set; }
+            public FactionId FactionId { get; set; }
             public List<FactionReputation> FactionReputations { get; set; } = new List<FactionReputation>();
 
             public void Write(GamePacketWriter writer)
@@ -33,20 +33,6 @@ namespace NexusForever.WorldServer.Network.Message.Model
 
                 writer.Write((ushort)FactionReputations.Count);
                 FactionReputations.ForEach(f => f.Write(writer));
-            }
-
-            public void Add(ushort id, float value)
-            {
-                if(id != 0|| value != 0)
-                {
-                    return;
-                }
-
-                FactionReputations.Add(new FactionReputation
-                {
-                    FactionId = id,
-                    Value = value
-                });
             }
         }
 
