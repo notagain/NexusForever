@@ -18,6 +18,7 @@ using NexusForever.WorldServer.Game.Entity.Network;
 using NexusForever.WorldServer.Game.Entity.Network.Command;
 using NexusForever.WorldServer.Game.Entity.Network.Model;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Mail;
 using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.Setting;
 using NexusForever.WorldServer.Game.Setting.Static;
@@ -107,6 +108,8 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public uint PetGuid { get; set; }
 
+        public Dictionary<ulong, MailItem> AvailableMail { get; private set; } = new Dictionary<ulong, MailItem>();
+
         public WorldSession Session { get; }
         public bool IsLoading { get; private set; } = true;
 
@@ -185,6 +188,9 @@ namespace NexusForever.WorldServer.Game.Entity
 
             foreach(CharacterBone bone in model.CharacterBone.OrderBy(bone => bone.BoneIndex))
                 Bones.Add(bone.Bone);
+
+            foreach (CharacterMail mail in model.CharacterMail)
+                AvailableMail.Add(mail.Id, new MailItem(mail));
         }
 
         public override void Update(double lastTick)
@@ -316,6 +322,12 @@ namespace NexusForever.WorldServer.Game.Entity
                         Id    = RewardProperty.ExtraDecorSlots,
                         Type  = 1,
                         Value = 2000
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
+                        Id    = RewardProperty.Trading,
+                        Type  = 1,
+                        Value = 1
                     }
                 }
             });
@@ -359,6 +371,7 @@ namespace NexusForever.WorldServer.Game.Entity
             SpellManager.SendInitialPackets();
             PetCustomisationManager.SendInitialPackets();
             KeybindingManager.SendInitialPackets();
+            MailManager.SendInitialPackets(Session);
         }
 
         public ItemProficiency GetItemProficiences()
@@ -627,6 +640,8 @@ namespace NexusForever.WorldServer.Game.Entity
             PetCustomisationManager.Save(context);
             KeybindingManager.Save(context);
             SpellManager.Save(context);
+
+            MailManager.Save(this, context);
         }
 
         /// <summary>
