@@ -6,36 +6,8 @@ using System.Collections.Generic;
 
 namespace NexusForever.WorldServer.Network.Message.Handler
 {
-    public static class MiscHandler
+    public static class GuildHandler
     {
-        [MessageHandler(GameMessageOpcode.ClientPing)]
-        public static void HandlePing(WorldSession session, ClientPing ping)
-        {
-            session.Heartbeat.OnHeartbeat();
-        }
-
-        /// <summary>
-        /// Handled responses to Player Info Requests.
-        /// TODO: Put this in the right place, this is used by Mail & Contacts, at minimum. Probably used by Guilds, Circles, etc. too.
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="request"></param>
-        [MessageHandler(GameMessageOpcode.ClientPlayerInfoRequest)]
-        public static void HandlePlayerInfoRequest(WorldSession session, ClientPlayerInfoRequest request)
-        {
-            Dictionary<byte, ContactType> contactIndexToContactsTypeMap = new Dictionary<byte, ContactType>
-            {
-                { 1, ContactType.Ignore },
-                { 2, ContactType.Friend },
-                { 3, ContactType.Rival }
-            };
-            Character character = CharacterDatabase.GetCharacterById(request.CharacterId);
-            if (character != null)
-                ContactManager.HandlePlayerInfoResponse(session, character, contactIndexToContactsTypeMap[request.Unknown0]); // TODO: Put this in the right place
-            else
-                throw new ArgumentException();
-        }
-
         [MessageHandler(GameMessageOpcode.ClientGuildRegister)]
         public static void HandleGuildRegister(WorldSession session, ClientGuildRegister request)
         {
