@@ -105,7 +105,7 @@ namespace NexusForever.Shared.Network.Message
         ClientItemGenericUnlock         = 0x0400,
         ClientGuildRegister             = 0x0481,
         ServerGuildJoin                 = 0x0493,
-        ServerGuildInit                      = 0x0497, // guild info
+        ServerGuildInit                 = 0x0497, // guild info
         ServerGuildMembers              = 0x04A0,
         ServerGuildResult               = 0x04C9,
         ClientCastSpell                 = 0x04DB,
