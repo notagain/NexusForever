@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ClientMailDelete, MessageDirection.Client)]
+    [Message(GameMessageOpcode.ClientMailDelete)]
     public class ClientMailDelete : IReadable
     {
         public uint Count { get; private set; }

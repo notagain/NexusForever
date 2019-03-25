@@ -3,7 +3,7 @@ using NexusForever.Shared.Network.Message;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ClientMailTakeAttachment, MessageDirection.Client)]
+    [Message(GameMessageOpcode.ClientMailTakeAttachment)]
     public class ClientMailTakeAttachment : IReadable
     {
         public ulong MailId { get; private set; }

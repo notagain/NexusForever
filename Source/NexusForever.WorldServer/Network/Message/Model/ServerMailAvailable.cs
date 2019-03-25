@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ServerMailAvailable, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerMailAvailable)]
     public class ServerMailAvailable : IWritable
     {
         public class Attachment : IWritable

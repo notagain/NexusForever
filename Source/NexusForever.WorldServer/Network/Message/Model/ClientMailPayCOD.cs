@@ -3,7 +3,7 @@ using NexusForever.Shared.Network.Message;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ClientMailPayCOD, MessageDirection.Client)]
+    [Message(GameMessageOpcode.ClientMailPayCOD)]
     public class ClientMailPayCOD : IReadable
     {
         public ulong MailId { get; private set; }

@@ -4,7 +4,7 @@ using NexusForever.WorldServer.Game.Static;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ServerMailResult, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerMailResult)]
     public class ServerMailResult : IWritable
     {
        public uint Action { get; set; }

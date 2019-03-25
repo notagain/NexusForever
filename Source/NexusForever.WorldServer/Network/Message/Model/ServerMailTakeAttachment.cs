@@ -5,7 +5,7 @@ using NexusForever.WorldServer.Game.Static;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ServerMailTakeAttachment, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerMailTakeAttachment)]
     public class ServerMailTakeAttachment : IWritable
     {
         public ulong MailId { get; set; }

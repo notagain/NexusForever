@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ClientMailOpen, MessageDirection.Client)]
+    [Message(GameMessageOpcode.ClientMailOpen)]
     public class ClientMailOpen : IReadable
     {
        public uint Count { get; private set; }

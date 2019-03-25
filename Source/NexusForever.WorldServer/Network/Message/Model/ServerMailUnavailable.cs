@@ -4,7 +4,7 @@ using NexusForever.Shared.Network.Message;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ServerMailUnavailable, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerMailUnavailable)]
     public class ServerMailUnavailable : IWritable
     {
         public ulong MailId { get; set; }

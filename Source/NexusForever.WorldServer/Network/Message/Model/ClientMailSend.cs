@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ClientMailSend, MessageDirection.Client)]
+    [Message(GameMessageOpcode.ClientMailSend)]
     public class ClientMailSend : IReadable
     {
         public string Name { get; private set; }
