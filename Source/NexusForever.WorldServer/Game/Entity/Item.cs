@@ -77,12 +77,17 @@ namespace NexusForever.WorldServer.Game.Entity
             get => bagIndex;
             set
             {
+                if (bagIndex != value)
+                    PreviousBagIndex = bagIndex;
+
                 bagIndex = value;
                 saveMask |= ItemSaveMask.BagIndex;
             }
         }
 
         private uint bagIndex;
+
+        public uint PreviousBagIndex { get; private set; }
 
         public uint StackCount
         {
@@ -310,6 +315,14 @@ namespace NexusForever.WorldServer.Game.Entity
             };
 
             return networkItem;
+        }
+
+        /// <summary>
+        /// Returns whether this item is an equippable bag for expanding inventory slots
+        /// </summary>
+        public bool IsEquippableBag()
+        {
+            return Entry.Item2FamilyId == 5 && Entry.Item2CategoryId == 88 && Entry.Item2TypeId == 134;
         }
     }
 }

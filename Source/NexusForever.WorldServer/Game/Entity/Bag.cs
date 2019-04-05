@@ -14,6 +14,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public InventoryLocation Location { get; }
 
         private Item[] items;
+        public int SlotsRemaining { get; private set; }
 
         public Bag(InventoryLocation location, uint capacity)
         {
@@ -43,16 +44,6 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         /// <summary>
-        /// Get all <see cref="Item"/> stored in this <see cref="Bag"/>
-        /// </summary>
-        /// <returns></returns>
-        public List<Item> GetItems()
-        {
-            return items.ToList();
-        }
-
-
-        /// <summary>
         /// Returns the first empty bag index, if the bag is full <see cref="uint.MaxValue"/> is returned.
         /// </summary>
         public uint GetFirstAvailableBagIndex()
@@ -79,6 +70,8 @@ namespace NexusForever.WorldServer.Game.Entity
             items[item.BagIndex] = item;
 
             log.Trace($"Added item 0x{item.Guid:X16} to bag {Location} at index {item.BagIndex}.");
+
+            SlotsRemaining -= 1;
         }
 
         /// <summary>
@@ -99,6 +92,17 @@ namespace NexusForever.WorldServer.Game.Entity
 
             item.Location = InventoryLocation.None;
             item.BagIndex = 0u;
+
+            SlotsRemaining += 1;
+        }
+
+        /// <summary>
+        /// Returns bag's current size
+        /// </summary>
+        /// <returns></returns>
+        public int GetSize()
+        {
+            return items.Length;
         }
 
         /// <summary>
@@ -110,6 +114,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 throw new ArgumentOutOfRangeException(nameof(capacityChange));
 
             Array.Resize(ref items, items.Length + capacityChange);
+            SlotsRemaining = items.Length - items.Count(i => i != null);
 
             log.Trace($"Resized bag {Location} from {items.Length - capacityChange} to {items.Length} slots.");
         }
