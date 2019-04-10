@@ -60,7 +60,7 @@ namespace NexusForever.WorldServer.Database.Character
         public static Model.Item GetItemById(ulong id)
         {
             using (var context = new CharacterContext())
-                return context.Item.First(e => e.Id == id);
+                return context.Item.FirstOrDefault(e => e.Id == id);
         }
 
         public static async Task<List<Model.Character>> GetCharacters(uint accountId)

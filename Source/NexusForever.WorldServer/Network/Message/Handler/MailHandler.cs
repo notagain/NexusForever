@@ -134,9 +134,13 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 if (mailItem != null)
                 {
                     MailAttachment mailAttachment = mailItem.GetAttachment((int)clientMailTakeAttachment.Index);
-                    mailItem.AttachmentDelete(mailAttachment, (int)clientMailTakeAttachment.Index);
+
+                    // TODO: Check Inventory Full before proceeding
+                    mailAttachment.Item.CharacterId = session.Player.CharacterId;
+                    session.Player.Inventory.AddItem(mailAttachment.Item, Game.Entity.Static.InventoryLocation.Inventory);
+
                     mailItem.MarkAsNotReturnable();
-                    session.Player.Inventory.ItemCreate(mailAttachment.ItemId, mailAttachment.Amount, 4);
+                    mailItem.AttachmentDelete(mailAttachment, (int)clientMailTakeAttachment.Index);
                 }
                 else
                     result = GenericError.Mail_InvalidInventorySlot;

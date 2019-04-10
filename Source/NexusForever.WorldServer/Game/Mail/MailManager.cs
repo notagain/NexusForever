@@ -10,6 +10,7 @@ using NexusForever.WorldServer.Database.Character;
 using System.Threading.Tasks;
 using NexusForever.WorldServer.Game.Map;
 using NexusForever.Shared.Network;
+using NexusForever.Shared.Game.Events;
 
 namespace NexusForever.WorldServer.Game.Mail
 {
@@ -135,11 +136,15 @@ namespace NexusForever.WorldServer.Game.Mail
                         Entity.Item item = session.Player.Inventory.GetItem(itemGuid);
 
                         // TODO: Check the Item can be traded.
-                        MailAttachment mailAttachment = new MailAttachment(newMail.Id, item.Entry.Id, (uint)i, item.StackCount);
+                        MailAttachment mailAttachment = new MailAttachment(newMail.Id, item.Guid, (uint)i, item);
                         if (mailAttachment != null)
                             mailAttachments.Add(mailAttachment);
 
-                        session.Player.Inventory.ItemDelete(item, 20);
+                        Entity.Item newItem = session.Player.Inventory.ItemRemove(item);
+
+                        newItem.CharacterId = null;
+                        newItem.Location = Entity.Static.InventoryLocation.None;
+                        newItem.BagIndex = 0;
                     }
                 }
                 foreach (MailAttachment mailAttachment in mailAttachments)
@@ -148,7 +153,6 @@ namespace NexusForever.WorldServer.Game.Mail
 
             // TODO: Calculate & Deduct Mail Cost
 
-            // TODO: Handle queued mailn
             queuedMail.TryAdd(newMail.Id, newMail);
         }
         
@@ -200,28 +204,32 @@ namespace NexusForever.WorldServer.Game.Mail
             serverMailAvailable.MailList = new List<ServerMailAvailable.Mail>();
 
             foreach (MailItem mail in mails)
+            {
                 if (mail.IsReadyToDeliver())
                 {
-                    serverMailAvailable.MailList.Add(ConvertMailItemToServerMail(mail));
-
                     if (queuedMail.ContainsKey(mail.Id))
                         queuedMail.Remove(mail.Id);
+
+                    serverMailAvailable.MailList.Add(ConvertMailItemToServerMail(mail));
                 }
-                else if(!queuedMail.ContainsKey(mail.Id))
+                else if (!queuedMail.ContainsKey(mail.Id))
                 {
                     queuedMail.TryAdd(mail.Id, mail);
                     session.Player.AvailableMail.Remove(mail.Id);
                 }
+            }
 
             // Add queued items which have not been saved to the DB, yet
-            foreach(MailItem mailItem in queuedMail.Values.ToList())
+            foreach (MailItem mailItem in queuedMail.Values.ToList())
+            {
                 if (mailItem.IsReadyToDeliver())
                 {
-                    serverMailAvailable.MailList.Add(ConvertMailItemToServerMail(mailItem));
-
-                    queuedMail.Remove(mailItem.Id);
                     session.Player.AvailableMail.TryAdd(mailItem.Id, mailItem);
+                    queuedMail.Remove(mailItem.Id);
+
+                    serverMailAvailable.MailList.Add(ConvertMailItemToServerMail(mailItem));
                 }
+            }
 
             session.EnqueueMessageEncrypted(serverMailAvailable);
         }
@@ -269,8 +277,8 @@ namespace NexusForever.WorldServer.Game.Mail
         {
             var serverMailAttachment = new ServerMailAvailable.Attachment
             {
-                ItemId = attachment.ItemId,
-                Amount = attachment.Amount
+                ItemId = attachment.Item.Id,
+                Amount = attachment.Item.StackCount
             };
 
             return serverMailAttachment;

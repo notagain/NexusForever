@@ -468,12 +468,8 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .HasColumnName("index")
                     .HasDefaultValueSql("'0'");
 
-                entity.Property(e => e.ItemId)
-                    .HasColumnName("itemId")
-                    .HasDefaultValueSql("'0'");
-
-                entity.Property(e => e.Amount)
-                    .HasColumnName("amount")
+                entity.Property(e => e.ItemGuid)
+                    .HasColumnName("itemGuid")
                     .HasDefaultValueSql("'0'");
 
                 entity.HasOne(d => d.IdNavigation)

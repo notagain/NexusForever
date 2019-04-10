@@ -590,6 +590,30 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         /// <summary>
+        /// Remove <see cref="Item"/> from this player's inventory without deleting the item from the DB
+        /// </summary>
+        public Item ItemRemove(Item srcItem, byte reason = 49)
+        {
+            if (srcItem == null)
+                throw new InvalidPacketValueException("Item could not be found");
+
+            Bag srcBag = GetBag(srcItem.Location);
+            if (srcBag == null)
+                throw new InvalidPacketValueException();
+
+            srcBag.RemoveItem(srcItem);
+            deletedItems.Add(srcItem);
+
+            player.Session.EnqueueMessageEncrypted(new ServerItemDelete
+            {
+                Guid = srcItem.Guid,
+                Reason = reason
+            });
+
+            return srcItem;
+        }
+
+        /// <summary>
         /// Check if the <see cref="InventoryLocation.Inventory"/> for <see cref="Player"/> is full
         /// </summary>
         /// <returns></returns>
@@ -637,8 +661,6 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             if (item == null)
                 throw new ArgumentNullException();
-            if (item.Location != InventoryLocation.None)
-                throw new ArgumentException();
 
             item.Location = location;
             item.BagIndex = bagIndex;
@@ -646,7 +668,7 @@ namespace NexusForever.WorldServer.Game.Entity
             AddItem(item);
         }
 
-        private void AddItem(Item item)
+        public void AddItem(Item item)
         {
             if (item == null)
                 throw new ArgumentNullException();

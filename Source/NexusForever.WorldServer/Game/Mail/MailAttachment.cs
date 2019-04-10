@@ -1,20 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Database;
+using NexusForever.WorldServer.Database.Character;
 using NexusForever.WorldServer.Database.Character.Model;
 using NexusForever.WorldServer.Game.Mail.Static;
 using MailAttachmentModel = NexusForever.WorldServer.Database.Character.Model.CharacterMailAttachment;
+using ItemModel = NexusForever.WorldServer.Database.Character.Model.Item;
 
 namespace NexusForever.WorldServer.Game.Mail
 {
     public class MailAttachment: ISaveCharacter
     {
         public ulong Id { get; }
-        public uint ItemId { get; }
+        public ulong ItemGuid { get; }
         public uint Index { get; }
-        public uint Amount { get; }
 
-        private Item2Entry ItemEntry { get; set; }
+        public Entity.Item Item { get; private set; }
 
         private MailAttachmentSaveMask saveMask;
 
@@ -27,9 +28,10 @@ namespace NexusForever.WorldServer.Game.Mail
         public MailAttachment(MailAttachmentModel model)
         {
             Id = model.Id;
-            ItemId = model.ItemId;
+            ItemGuid = model.ItemGuid;
             Index = model.Index;
-            Amount = model.Amount;
+
+            Item = new Entity.Item(CharacterDatabase.GetItemById(model.ItemGuid));
 
             saveMask = MailAttachmentSaveMask.None;
         }
@@ -38,15 +40,17 @@ namespace NexusForever.WorldServer.Game.Mail
         /// Create a new <see cref="MailAttachment"/>
         /// </summary>
         /// <param name="mailId"></param>
-        /// <param name="itemId"></param>
+        /// <param name="itemGuid"></param>
         /// <param name="index"></param>
         /// <param name="amount"></param>
-        public MailAttachment(ulong mailId, uint itemId, uint index, uint amount)
+        public MailAttachment(ulong mailId, ulong itemGuid, uint index, Entity.Item item = null)
         {
             Id = mailId;
-            ItemId = itemId;
+            ItemGuid = itemGuid;
             Index = index;
-            Amount = amount;
+
+            if (item != null)
+                Item = item;
 
             saveMask = MailAttachmentSaveMask.Create;
         }
@@ -61,31 +65,32 @@ namespace NexusForever.WorldServer.Game.Mail
 
         public void Save(CharacterContext context)
         {
-            if (saveMask == MailAttachmentSaveMask.None)
-                return;
-
-            if ((saveMask & MailAttachmentSaveMask.Create) != 0)
+            if (saveMask != MailAttachmentSaveMask.None)
             {
-                context.Add(new MailAttachmentModel
+                if ((saveMask & MailAttachmentSaveMask.Create) != 0)
                 {
-                    Id = Id,
-                    Index = Index,
-                    ItemId = ItemId,
-                    Amount = Amount
-                });
-            }
-            else if ((saveMask & MailAttachmentSaveMask.Delete) != 0)
-            {
-                var model = new MailAttachmentModel
+                    context.Add(new MailAttachmentModel
+                    {
+                        Id = Id,
+                        Index = Index,
+                        ItemGuid = ItemGuid
+                    });
+                }
+                else if ((saveMask & MailAttachmentSaveMask.Delete) != 0)
                 {
-                    Id = Id,
-                    Index = Index
-                };
+                    var model = new MailAttachmentModel
+                    {
+                        Id = Id,
+                        Index = Index
+                    };
 
-                context.Entry(model).State = EntityState.Deleted;
+                    context.Entry(model).State = EntityState.Deleted;
+                }
+
+                saveMask = MailAttachmentSaveMask.None;
             }
 
-            saveMask = MailAttachmentSaveMask.None;
+            Item.Save(context);
         }
     }
 }
