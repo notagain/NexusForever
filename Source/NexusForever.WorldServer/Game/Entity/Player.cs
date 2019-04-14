@@ -19,10 +19,13 @@ using NexusForever.WorldServer.Game.Entity.Network.Command;
 using NexusForever.WorldServer.Game.Entity.Network.Model;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.Map;
+using NexusForever.WorldServer.Game.Setting;
+using NexusForever.WorldServer.Game.Setting.Static;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NexusForever.WorldServer.Game.Spell;
 
 namespace NexusForever.WorldServer.Game.Entity
 {
@@ -37,18 +40,6 @@ namespace NexusForever.WorldServer.Game.Entity
         public Race Race { get; }
         public Class Class { get; }
         public List<float> Bones { get; } = new List<float>();
-
-        public byte Level
-        {
-            get => level;
-            set
-            {
-                level = value;
-                saveMask |= PlayerSaveMask.Level;
-            }
-        }
-
-        private byte level;
 
         public Path Path
         {
@@ -72,7 +63,18 @@ namespace NexusForever.WorldServer.Game.Entity
             }
         }
 
+        public InputSets InputKeySet
+        {
+            get => inputKeySet;
+            set
+            {
+                inputKeySet = value;
+                saveMask |= PlayerSaveMask.InputKeySet;
+            }
+        }
+
         private sbyte costumeIndex;
+        private InputSets inputKeySet;
 
         public DateTime CreateTime { get; }
         public double TimePlayedTotal { get; private set; }
@@ -105,6 +107,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public CostumeManager CostumeManager { get; }
         public PetCustomisationManager PetCustomisationManager { get; }
         public ReputationManager ReputationManager { get; }
+        public KeybindingManager KeybindingManager { get; }
 
         public VendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
 
@@ -126,9 +129,9 @@ namespace NexusForever.WorldServer.Game.Entity
             Sex             = (Sex)model.Sex;
             Race            = (Race)model.Race;
             Class           = (Class)model.Class;
-            Level           = model.Level;
             Path            = (Path)model.ActivePath;
             CostumeIndex    = model.ActiveCostumeIndex;
+            InputKeySet     = (InputSets)model.InputKeySet;
             Faction1        = (Faction)model.FactionId;
             Faction2        = (Faction)model.FactionId;
 
@@ -144,13 +147,8 @@ namespace NexusForever.WorldServer.Game.Entity
             TitleManager    = new TitleManager(this, model);
             SpellManager    = new SpellManager(this, model);
             PetCustomisationManager = new PetCustomisationManager(this, model);
-            ReputationManager = new ReputationManager(this, model);
-
-            Stats.Add(Stat.Level, new StatValue(Stat.Level, level));
-
-            // temp
-            Stats.Add(Stat.Health, new StatValue(Stat.Health, 800));
-
+            ReputationManager       = new ReputationManager(this, model);
+            KeybindingManager       = new KeybindingManager(this, session.Account, model);
             // temp
             Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 200f, 800f));
             Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1f, 1f));
@@ -169,8 +167,13 @@ namespace NexusForever.WorldServer.Game.Entity
                     DisplayId = a.DisplayId
                 }));
 
-            foreach(CharacterBone bone in model.CharacterBone.OrderBy(bone => bone.BoneIndex))
+            foreach (CharacterBone bone in model.CharacterBone.OrderBy(bone => bone.BoneIndex))
                 Bones.Add(bone.Bone);
+
+            foreach (CharacterStat statModel in model.CharacterStat)
+                stats.Add((Stat)statModel.Stat, new StatValue(statModel));
+
+            SetStat(Stat.Sheathed, 1u);
         }
 
         public override void Update(double lastTick)
@@ -286,17 +289,22 @@ namespace NexusForever.WorldServer.Game.Entity
             Session.EnqueueMessageEncrypted(new Server00F1());
             SetControl(this);
 
-            // this seems to set values at the client by id, needs more research
-            // id 11 is related to costume slots
-            Session.EnqueueMessageEncrypted(new Server092C
+            // TODO: Move to Unlocks/Rewards Handler. A lot of these are tied to Entitlements which display in the character sheet, but don't actually unlock anything without this packet.
+            Session.EnqueueMessageEncrypted(new ServerRewardPropertySet
             {
-                Variables = new List<Server092C.Variable>
+                Variables = new List<ServerRewardPropertySet.RewardProperty>
                 {
-                    new Server092C.Variable
+                    new ServerRewardPropertySet.RewardProperty
                     {
-                        Id    = 11,
+                        Id    = RewardProperty.CostumeSlots,
                         Type  = 1,
                         Value = CostumeManager.CostumeCap
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
+                        Id    = RewardProperty.ExtraDecorSlots,
+                        Type  = 1,
+                        Value = 2000
                     }
                 }
             });
@@ -310,7 +318,8 @@ namespace NexusForever.WorldServer.Game.Entity
                 {
                     FactionId = Faction1, // This does not do anything for the player's "main" faction. Exiles/Dominion
                 },
-                ActiveCostumeIndex = CostumeIndex
+                ActiveCostumeIndex = CostumeIndex,
+                InputKeySet = (uint)InputKeySet
             };
             playerCreate.FactionData.FactionReputations = ReputationManager.LoadReputations();
 
@@ -339,6 +348,7 @@ namespace NexusForever.WorldServer.Game.Entity
             TitleManager.SendTitles();
             SpellManager.SendInitialPackets();
             PetCustomisationManager.SendInitialPackets();
+            KeybindingManager.SendInitialPackets();
         }
 
         public ItemProficiency GetItemProficiences()
@@ -451,9 +461,18 @@ namespace NexusForever.WorldServer.Game.Entity
 
             logoutManager = new LogoutManager(timeToLogout, reason, requested);
 
-            Session.EnqueueMessageEncrypted(new ServerCharacterLogoutStart
+            Session.EnqueueMessageEncrypted(new ServerLogoutUpdate
             {
-                TimeTillLogout = (uint)timeToLogout * 1000
+                TimeTillLogout     = (uint)timeToLogout * 1000,
+                Unknown0           = false,
+                SignatureBonusData = new ServerLogoutUpdate.SignatureBonuses
+                {
+                    // see FillSignatureBonuses in ExitWindow.lua for more information
+                    Xp                = 0,
+                    ElderPoints       = 0,
+                    Currencies        = new ulong[15],
+                    AccountCurrencies = new ulong[19]
+                }
             });
         }
 
@@ -477,7 +496,7 @@ namespace NexusForever.WorldServer.Game.Entity
             if (logoutManager == null)
                 throw new InvalidPacketValueException();
 
-            Session.EnqueueMessageEncrypted(new ServerClientLogout
+            Session.EnqueueMessageEncrypted(new ServerLogout
             {
                 Requested = logoutManager.Requested,
                 Reason    = logoutManager.Reason
@@ -538,6 +557,7 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             Session.GenericUnlockManager.Save(context);
             CostumeManager.Save(context);
+            KeybindingManager.Save(context);
         }
 
         public void Save(CharacterContext context)
@@ -551,12 +571,6 @@ namespace NexusForever.WorldServer.Game.Entity
 
             if (saveMask != PlayerSaveMask.None)
             {
-                if ((saveMask & PlayerSaveMask.Level) != 0)
-                {
-                    model.Level = Level;
-                    entity.Property(p => p.Level).IsModified = true;
-                }
-
                 if ((saveMask & PlayerSaveMask.Location) != 0)
                 {
                     model.LocationX = Position.X;
@@ -570,6 +584,9 @@ namespace NexusForever.WorldServer.Game.Entity
 
                     model.WorldId = (ushort)Map.Entry.Id;
                     entity.Property(p => p.WorldId).IsModified = true;
+
+                    model.WorldZoneId = (ushort)Zone.Id;
+                    entity.Property(p => p.WorldZoneId).IsModified = true;
                 }
 
                 if ((saveMask & PlayerSaveMask.Path) != 0)
@@ -584,6 +601,12 @@ namespace NexusForever.WorldServer.Game.Entity
                     entity.Property(p => p.ActiveCostumeIndex).IsModified = true;
                 }
 
+                if ((saveMask & PlayerSaveMask.InputKeySet) != 0)
+                {
+                    model.InputKeySet = (sbyte)InputKeySet;
+                    entity.Property(p => p.InputKeySet).IsModified = true;
+                }
+
                 saveMask = PlayerSaveMask.None;
             }
 
@@ -592,6 +615,9 @@ namespace NexusForever.WorldServer.Game.Entity
             model.TimePlayedTotal = (uint)TimePlayedTotal;
             entity.Property(p => p.TimePlayedTotal).IsModified = true;
 
+            foreach (StatValue stat in stats.Values)
+                stat.SaveCharacter(CharacterId, context);
+
             Inventory.Save(context);
             CurrencyManager.Save(context);
             PathManager.Save(context);
@@ -599,6 +625,7 @@ namespace NexusForever.WorldServer.Game.Entity
             CostumeManager.Save(context);
             PetCustomisationManager.Save(context);
             ReputationManager.Save(context);
+            KeybindingManager.Save(context);
             SpellManager.Save(context);
         }
 

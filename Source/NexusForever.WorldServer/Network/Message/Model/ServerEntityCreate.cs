@@ -9,7 +9,7 @@ using NexusForever.WorldServer.Network.Message.Model.Shared;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ServerEntityCreate, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerEntityCreate)]
     public class ServerEntityCreate : IWritable
     {
         #region Unknown Structures
@@ -124,7 +124,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             writer.Write(CreateFlags);
 
             writer.Write((byte)Stats.Count, 5);
-            Stats.ForEach(o => o.Write(writer));
+            Stats.ForEach(o => o.WriteInitial(writer));
 
             writer.Write(Time);
 
