@@ -487,6 +487,12 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             session.Player.TargetGuid = target.Guid;
         }
 
+        [MessageHandler(GameMessageOpcode.ClientReplayLevelRequest)]
+        public static void HandleReplayLevel(WorldSession session, ClientReplayLevelUp request)
+        {
+            session.Player.CastSpell(53378, (byte)request.Level, new SpellParameters());
+        }
+
         [MessageHandler(GameMessageOpcode.ClientRequestPlayed)]
         public static void HandleClientRequestPlayed(WorldSession session, ClientRequestPlayed requestPlayed)
         {
