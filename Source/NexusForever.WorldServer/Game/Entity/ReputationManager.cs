@@ -48,7 +48,7 @@ namespace NexusForever.WorldServer.Game.Entity
             if (reputationEntry == null)
                 return null;
 
-            if (reputations.ContainsKey((uint)reputationEntry.Id))
+            if (reputations.ContainsKey(reputationEntry.Id))
                 throw new ArgumentException($"Reputation {reputationEntry.Id} is already added to the player!");
 
             Reputation reputation = new Reputation(
@@ -97,6 +97,8 @@ namespace NexusForever.WorldServer.Game.Entity
                     ReputationValueUpdate(reputation, valueToSend);
                 }
             }
+
+            // TODO: Add to a parent value, if necessary.
         }
 
         public Reputation GetReputation(uint reputationId)
@@ -114,8 +116,9 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             List<ServerPlayerCreate.Faction.FactionReputation> factionList = new List<ServerPlayerCreate.Faction.FactionReputation>();
 
-            if (reputations.Count <= 0)
-                ReputationCreate((uint)player.Faction1);
+            // TODO: Not sure if this should actually happen
+            //if (reputations.Count <= 0)
+            //    ReputationCreate((uint)player.Faction1);
 
             foreach (KeyValuePair<uint, Reputation> reputation in reputations)
                 factionList.Add(new ServerPlayerCreate.Faction.FactionReputation
