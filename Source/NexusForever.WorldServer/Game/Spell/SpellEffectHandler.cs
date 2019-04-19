@@ -104,6 +104,13 @@ namespace NexusForever.WorldServer.Game.Spell
             player.Session.GenericUnlockManager.Unlock((ushort)info.Entry.DataBits00);
         }
 
+        [SpellEffectHandler(SpellEffectType.UnitPropertyModifier)]
+        private void HandleUnitPropertyModifier(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
+        {
+            // TODO: Handle removing Property Modifier when spell effect removed
+            target.SetProperty((Property)info.Entry.DataBits00, info.Entry.DataBits01);
+        }
+
         [SpellEffectHandler(SpellEffectType.UnlockMount)]
         private void HandleEffectUnlockMount(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
         {
