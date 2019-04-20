@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NexusForever.WorldServer.Network.Message.Model
 {
 
-    [Message(GameMessageOpcode.ServerGuildInit, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerGuildInit)]
     public class ServerGuildInit : IWritable
     {
         public uint Unknown0 { get; set; }

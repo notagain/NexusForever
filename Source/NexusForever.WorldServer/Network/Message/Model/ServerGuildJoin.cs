@@ -5,7 +5,7 @@ using NexusForever.WorldServer.Network.Message.Model.Shared;
 namespace NexusForever.WorldServer.Network.Message.Model
 {
 
-    [Message(GameMessageOpcode.ServerGuildJoin, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerGuildJoin)]
     public class ServerGuildJoin : IWritable
     {
         public Guild Guild { get; set; } = new Guild();

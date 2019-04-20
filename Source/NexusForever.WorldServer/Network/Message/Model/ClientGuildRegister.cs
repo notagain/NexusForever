@@ -4,11 +4,10 @@ using NexusForever.Shared.Network.Message;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ClientGuildRegister, MessageDirection.Client)]
+    [Message(GameMessageOpcode.ClientGuildRegister)]
     public class ClientGuildRegister : IReadable
     {
         
-
         public void Read(GamePacketReader reader)
         {
             

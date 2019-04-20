@@ -4,7 +4,7 @@ using NexusForever.Shared.Network.Message;
 namespace NexusForever.WorldServer.Network.Message.Model
 {
 
-    [Message(GameMessageOpcode.ServerGuildResult, MessageDirection.Server)]
+    [Message(GameMessageOpcode.ServerGuildResult)]
     public class ServerGuildResult : IWritable
     {
         public ushort Realm { get; set; }
