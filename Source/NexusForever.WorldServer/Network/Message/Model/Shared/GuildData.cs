@@ -1,5 +1,6 @@
 ﻿using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
+using NexusForever.WorldServer.Game.Guild.Static;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -37,7 +38,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
             public uint Unknown6 { get; set; }
             public uint Unknown7 { get; set; }
             public uint Unknown8 { get; set; }
-            public float Age { get; set; }
+            public float AgeInDays { get; set; }
 
             public void Write(GamePacketWriter writer)
             {
@@ -50,7 +51,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
                 writer.Write(Unknown6);
                 writer.Write(Unknown7);
                 writer.Write(Unknown8);
-                writer.Write(Age);
+                writer.Write(AgeInDays);
             }
         }
 
@@ -69,7 +70,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
         public ulong GuildId { get; set; }
         public string GuildName { get; set; }
         public uint Unknown0 { get; set; }
-        public byte Type { get; set; } // 4
+        public GuildType Type { get; set; } // 4
 
         public List<Rank> Ranks { get; set; } = new List<Rank>(new Rank[10]);
 

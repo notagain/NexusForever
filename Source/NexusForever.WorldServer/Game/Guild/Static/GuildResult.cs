@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NexusForever.WorldServer.Game.Guild.Static
+﻿namespace NexusForever.WorldServer.Game.Guild.Static
 {
     public enum GuildResult
     {

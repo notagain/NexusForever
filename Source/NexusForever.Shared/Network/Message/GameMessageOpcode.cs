@@ -107,6 +107,8 @@ namespace NexusForever.Shared.Network.Message
         ServerGuildJoin                 = 0x0493,
         ServerGuildInit                 = 0x0497, // guild info
         ServerGuildMembers              = 0x04A0,
+        ServerGuildNameplateAdd         = 0x04AC,
+        ServerGuildNameplateSet         = 0x04AE,
         ServerGuildResult               = 0x04C9,
         ClientCastSpell                 = 0x04DB,
         ServerHousingResidenceDecor     = 0x04DE,
