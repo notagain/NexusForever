@@ -7,21 +7,26 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Social;
+using NexusForever.WorldServer.Game.Social.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NLog;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
     [Name("Items")]
     public class ItemCommandHandler : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
+
         public ItemCommandHandler()
             : base(true, "item")
         {
         }
 
         [SubCommandHandler("add", "itemId [quantity] - Add an item to inventory, optionally specifying quantity")]
-        public Task AddItemSubCommand(CommandContext context, string command, string[] parameters)
+        public Task AddItemSubCommand(CommandContext context, string command, string[] parameters, IEnumerable<ChatFormat> chatLinks)
         {
+            List<ChatFormat> ItemLinks = chatLinks?.Where(i => (i.Type == Game.Social.Static.ChatFormatType.ItemItemId || i.Type == Game.Social.Static.ChatFormatType.ItemGuid || i.Type == Game.Social.Static.ChatFormatType.ItemFull)).ToList();
             if (parameters.Length <= 0)
                 return Task.CompletedTask;
 
@@ -34,8 +39,20 @@ namespace NexusForever.WorldServer.Command.Handler
                 charges = uint.Parse(parameters[2]);
 
             uint itemId = 0;
-            if (parameters[0].StartsWith("{itemId:"))
-                itemId = uint.Parse(parameters[0].Replace("{itemId:", "").Replace("}", ""));
+            if(ItemLinks?.Count == 1)
+            {
+                ChatFormat itemLink = ItemLinks[0];
+                if (itemLink.Type == Game.Social.Static.ChatFormatType.ItemItemId)
+                {
+                    ChatFormatItemId formatModel = (ChatFormatItemId)itemLink.FormatModel;
+                    itemId = formatModel.ItemId;
+                }
+                else if (itemLink.Type == Game.Social.Static.ChatFormatType.ItemGuid)
+                {
+                    ChatFormatItemGuid formatModel = (ChatFormatItemGuid)itemLink.FormatModel;
+                    itemId = context.Session.Player.Inventory.GetItem(formatModel.Guid).Entry.Id;
+                }
+            }
             else
                 itemId = uint.Parse(parameters[0]);
 
@@ -55,7 +72,7 @@ namespace NexusForever.WorldServer.Command.Handler
         }
 
         [SubCommandHandler("find", "itemName - Search for an item by name.")]
-        public async Task FindItemSubCommand(CommandContext context, string command, string[] parameters)
+        public async Task FindItemSubCommand(CommandContext context, string command, string[] parameters, IEnumerable<ChatFormat> chatLinks)
         {
             if (parameters.Length <= 0)
                 await Task.CompletedTask;
