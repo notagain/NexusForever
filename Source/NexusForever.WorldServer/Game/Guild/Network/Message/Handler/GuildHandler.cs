@@ -14,7 +14,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientGuildRegister)]
         public static void HandleGuildRegister(WorldSession session, ClientGuildRegister request)
         {
-            log.Info($"{request.UnitId}, {request.GuildType}, {request.GuildName}, {request.MasterTitle}, {request.CouncilTitle}, {request.MemberTitle}, {request.GuildHolomark.HolomarkPart1.GuildStandardPartId}, {request.GuildHolomark.HolomarkPart2.GuildStandardPartId}, {request.GuildHolomark.HolomarkPart3.GuildStandardPartId}, {request.Unknown0}");
+            log.Info($"{request.UnitId}, {request.GuildType}, {request.GuildName}, {request.MasterTitle}, {request.CouncilTitle}, {request.MemberTitle}, {request.GuildHolomark.BackgroundIcon.GuildStandardPartId}, {request.GuildHolomark.ForegroundIcon.GuildStandardPartId}, {request.GuildHolomark.ScanLines.GuildStandardPartId}, {request.Unknown0}");
 
             session.EnqueueMessageEncrypted(new ServerGuildJoin
             {
@@ -164,7 +164,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 CharacterId = session.Player.CharacterId,
                 Unknown0 = 0,
                 GuildName = request.GuildName,
-                Result = 61
+                Result = Game.Guild.Static.GuildResult.YouCreated
             });
 
             session.EnqueueMessageEncrypted(new ServerGuildMembers
@@ -243,9 +243,50 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 Slot = Game.Entity.Static.ItemSlot.GuildStandardBack,
                 DisplayId = 7163
             });
+            itemVisualUpdate.ItemVisuals.Add(new ItemVisual
+            {
+                Slot = Game.Entity.Static.ItemSlot.GuildStandardShoulderL,
+                DisplayId = 7164
+            });
+            itemVisualUpdate.ItemVisuals.Add(new ItemVisual
+            {
+                Slot = Game.Entity.Static.ItemSlot.GuildStandardShoulderR,
+                DisplayId = 7165
+            });
+            // 7163 - Near Back
+            // 7164 - Near Left
+            // 7165 - Near Right
+            // 5580 - Far Back
+            // 5581 - Far Left
+            // 5582 - Far Right
 
             if (!session.Player.IsLoading)
                 session.Player.EnqueueToVisible(itemVisualUpdate, true);
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientGuildHolomarkUpdate)]
+        public static void HandleHolomarkUpdate(WorldSession session, ClientGuildHolomarkUpdate clientGuildHolomarkUpdate)
+        {
+            log.Info($"{clientGuildHolomarkUpdate.Unknown0}, {clientGuildHolomarkUpdate.Unknown1}");
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientGuildOperation)]
+        public static void HandleOperation(WorldSession session, ClientGuildOperation clientGuildOperation)
+        {
+            log.Info($"{clientGuildOperation.Guid}, {clientGuildOperation.Id}, {clientGuildOperation.Text}, {clientGuildOperation.Operation}");
+
+            if(clientGuildOperation.Operation == Game.Guild.Static.GuildOperation.InviteMember)
+            {
+                WorldSession targetSession = Shared.Network.NetworkManager<WorldSession>.GetSession(s => s.Player?.Name == clientGuildOperation.Text);
+                targetSession?.EnqueueMessageEncrypted(new ServerGuildInvite
+                {
+                    PlayerName = "PlayerName",
+                    GuildName = "GuildName",
+                    Unknown2 = 0,
+                    Unknown3 = 1,
+                    Unknown4 = 1
+                });
+            }
         }
     }
 }

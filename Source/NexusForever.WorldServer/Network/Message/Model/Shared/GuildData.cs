@@ -74,7 +74,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
 
         public List<Rank> Ranks { get; set; } = new List<Rank>(new Rank[10]);
 
-        public GuildHolomark Holomark { get; set; } = new GuildHolomark();
+        public GuildStandard Holomark { get; set; } = new GuildStandard();
 
         public uint TotalMembers { get; set; }
         public uint UsersOnline { get; set; }

@@ -1,5 +1,6 @@
 ﻿using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
+using NexusForever.WorldServer.Game.Guild.Static;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
@@ -11,7 +12,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         public ulong CharacterId { get; set; }
         public uint Unknown0 { get; set; }
         public string GuildName { get; set; }
-        public byte Result { get; set; }
+        public GuildResult Result { get; set; }
 
         public void Write(GamePacketWriter writer)
         {
@@ -19,7 +20,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             writer.Write(CharacterId);
             writer.Write(Unknown0);
             writer.WriteStringWide(GuildName);
-            writer.Write(Result);
+            writer.Write(Result, 8u);
         }
     }
 }

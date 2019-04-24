@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NexusForever.WorldServer.Network.Message.Model
 {
 
-    [Message(GameMessageOpcode.ServerGuildMembers)]
+    [Message(GameMessageOpcode.ServerGuildRoster)]
     public class ServerGuildMembers : IWritable
     {
         public ushort GuildRealm { get; set; }

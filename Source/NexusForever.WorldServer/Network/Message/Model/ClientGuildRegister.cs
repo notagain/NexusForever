@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Guild.Static;
-using GuildHolomarkModel = NexusForever.WorldServer.Network.Message.Model.Shared.GuildHolomark;
+using GuildHolomarkModel = NexusForever.WorldServer.Network.Message.Model.Shared.GuildStandard;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {

@@ -3,9 +3,9 @@ using NexusForever.Shared.Network.Message;
 
 namespace NexusForever.WorldServer.Network.Message.Model.Shared
 {
-    public class GuildHolomark : IWritable, IReadable
+    public class GuildStandard : IWritable, IReadable
     {
-        public class HolomarkPart: IWritable, IReadable
+        public class GuildStandardPart: IWritable, IReadable
         {
             public ushort GuildStandardPartId { get; set; }
             public ushort DyeColorRampId1 { get; set; }
@@ -29,22 +29,22 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
             }
         }
 
-        public HolomarkPart HolomarkPart1 { get; set; } = new HolomarkPart();
-        public HolomarkPart HolomarkPart2 { get; set; } = new HolomarkPart();
-        public HolomarkPart HolomarkPart3 { get; set; } = new HolomarkPart();
+        public GuildStandardPart BackgroundIcon { get; set; } = new GuildStandardPart();
+        public GuildStandardPart ForegroundIcon { get; set; } = new GuildStandardPart();
+        public GuildStandardPart ScanLines { get; set; } = new GuildStandardPart();
 
         public void Write(GamePacketWriter writer)
         {
-            HolomarkPart1.Write(writer);
-            HolomarkPart2.Write(writer);
-            HolomarkPart3.Write(writer);
+            BackgroundIcon.Write(writer);
+            ForegroundIcon.Write(writer);
+            ScanLines.Write(writer);
         }
 
         public void Read(GamePacketReader reader)
         {
-            HolomarkPart1.Read(reader);
-            HolomarkPart2.Read(reader);
-            HolomarkPart3.Read(reader);
+            BackgroundIcon.Read(reader);
+            ForegroundIcon.Read(reader);
+            ScanLines.Read(reader);
         }
     }
 }
