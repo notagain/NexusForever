@@ -173,8 +173,13 @@ namespace NexusForever.Shared.GameTable
         public static GameTable<CustomizationParameterEntry> CustomizationParameter { get; private set; }
         public static GameTable<CustomizationParameterMapEntry> CustomizationParameterMap { get; private set; }
         public static GameTable<DailyLoginRewardEntry> DailyLoginReward { get; private set; }
+
+        [GameData]
         public static GameTable<DatacubeEntry> Datacube { get; private set; }
+
+        [GameData]
         public static GameTable<DatacubeVolumeEntry> DatacubeVolume { get; private set; }
+
         public static GameTable<DistanceDamageModifierEntry> DistanceDamageModifier { get; private set; }
 
         [GameData]
@@ -521,8 +526,13 @@ namespace NexusForever.Shared.GameTable
         [GameData]
         public static GameTable<SpellLevelEntry> SpellLevel { get; private set; }
         public static GameTable<SpellPhaseEntry> SpellPhase { get; private set; }
+
+        [GameData]
         public static GameTable<Spline2Entry> Spline2 { get; private set; }
+
+        [GameData]
         public static GameTable<Spline2NodeEntry> Spline2Node { get; private set; }
+
         public static GameTable<StoreDisplayInfoEntry> StoreDisplayInfo { get; private set; }
         public static GameTable<StoreKeywordEntry> StoreKeyword { get; private set; }
         public static GameTable<StoreLinkEntry> StoreLink { get; private set; }

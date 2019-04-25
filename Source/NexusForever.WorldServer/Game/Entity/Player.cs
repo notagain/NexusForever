@@ -25,7 +25,6 @@ using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
-using NexusForever.WorldServer.Game.Spell;
 
 namespace NexusForever.WorldServer.Game.Entity
 {
@@ -89,7 +88,11 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Guid of the <see cref="Vehicle"/> the <see cref="Player"/> is a passenger on.
         /// </summary>
-        public uint VehicleGuid { get; set; }
+        public uint VehicleGuid
+        {
+            get => MovementManager.GetPlatform() ?? 0u;
+            set => MovementManager.SetPlatform(value);
+        }
 
         /// <summary>
         /// Guid of the <see cref="VanityPet"/> currently summoned by the <see cref="Player"/>.
@@ -108,6 +111,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public PetCustomisationManager PetCustomisationManager { get; }
         public ReputationManager ReputationManager { get; }
         public KeybindingManager KeybindingManager { get; }
+        public DatacubeManager DatacubeManager { get; }
 
         public VendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
 
@@ -149,6 +153,8 @@ namespace NexusForever.WorldServer.Game.Entity
             PetCustomisationManager = new PetCustomisationManager(this, model);
             ReputationManager       = new ReputationManager(this, model);
             KeybindingManager       = new KeybindingManager(this, session.Account, model);
+            DatacubeManager         = new DatacubeManager(this, model);
+
             // temp
             Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 200f, 800f));
             Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1f, 1f));
@@ -187,6 +193,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 logoutManager.Update(lastTick);
             }
             
+            base.Update(lastTick);
             TitleManager.Update(lastTick);
             SpellManager.Update(lastTick);
             CostumeManager.Update(lastTick);
@@ -349,6 +356,7 @@ namespace NexusForever.WorldServer.Game.Entity
             SpellManager.SendInitialPackets();
             PetCustomisationManager.SendInitialPackets();
             KeybindingManager.SendInitialPackets();
+            DatacubeManager.SendInitialPackets();
         }
 
         public ItemProficiency GetItemProficiences()
@@ -368,39 +376,6 @@ namespace NexusForever.WorldServer.Game.Entity
                 MapManager.AddToMap(this, pendingTeleport.Info, pendingTeleport.Vector);
                 pendingTeleport = null;
             }
-        }
-
-        public override ServerEntityCreate BuildCreatePacket()
-        {
-            ServerEntityCreate entityCreate = base.BuildCreatePacket();
-            if (VehicleGuid == 0u)
-                return entityCreate;
-
-            entityCreate.Commands = new Dictionary<EntityCommand, IEntityCommand>
-            {
-                {
-                    EntityCommand.SetPlatform,
-                    new SetPlatformCommand
-                    {
-                        UnitId = VehicleGuid
-                    }
-                },
-                {
-                    EntityCommand.SetPosition,
-                    new SetPositionCommand
-                    {
-                        Position = new Position(new Vector3(0f,0f,0f))
-                    }
-                },
-                {
-                    EntityCommand.SetRotation,
-                    new SetRotationCommand
-                    {
-                        Position = new Position(new Vector3(0f,0f,0f))
-                    }
-                }
-            };
-            return entityCreate;
         }
 
         public override void AddVisible(GridEntity entity)
@@ -627,6 +602,7 @@ namespace NexusForever.WorldServer.Game.Entity
             ReputationManager.Save(context);
             KeybindingManager.Save(context);
             SpellManager.Save(context);
+            DatacubeManager.Save(context);
         }
 
         /// <summary>
