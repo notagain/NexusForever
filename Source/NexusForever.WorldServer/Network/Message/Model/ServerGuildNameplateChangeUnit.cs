@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
+using NexusForever.WorldServer.Game.Guild.Static;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
@@ -9,13 +10,13 @@ namespace NexusForever.WorldServer.Network.Message.Model
     {
         public uint UnitId { get; set; }
         public string GuildName { get; set; }
-        public byte Unknown0 { get; set; } // 4
+        public GuildType GuildType { get; set; } // 4
 
         public void Write(GamePacketWriter writer)
         {
             writer.Write(UnitId);
             writer.WriteStringWide(GuildName);
-            writer.Write(Unknown0, 4u);
+            writer.Write(GuildType, 4u);
         }
     }
 }

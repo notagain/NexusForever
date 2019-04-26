@@ -115,11 +115,11 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                         CurrentInfluence = 500,
                         DailyBonusRemaining = 200000,
                         Unknown5 = 0,
-                        Unknown6 = 0,
-                        Unknown7 = 5,
+                        Unknown6 = 1,
+                        Unknown7 = 1,
                         BankTabNames = new List<string>
                         {
-                            "Testing","","","","","","","","",""
+                            "","","","","","","","","",""
                         },
                         Unknown11 = new GuildData.Info
                         {
@@ -205,7 +205,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             {
                 UnitId = session.Player.Guid,
                 GuildName = request.GuildName,
-                Unknown0 = 1
+                GuildType = request.GuildType
             }, true);
 
 
@@ -282,8 +282,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 {
                     PlayerName = "PlayerName",
                     GuildName = "GuildName",
-                    Unknown2 = 0,
-                    Unknown3 = 1,
+                    Taxes = 0,
+                    GuildType = Game.Guild.Static.GuildType.Guild,
                     Unknown4 = 1
                 });
             }
