@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Guild.Static;
-using GuildHolomarkModel = NexusForever.WorldServer.Network.Message.Model.Shared.GuildStandard;
+using NexusForever.WorldServer.Network.Message.Model.Shared;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
@@ -15,7 +15,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         public string MasterTitle { get; set; }
         public string CouncilTitle { get; set; }
         public string MemberTitle { get; set; }
-        public GuildHolomarkModel GuildHolomark { get; set; } = new GuildHolomarkModel();
+        public GuildStandard GuildStandard { get; set; } = new GuildStandard();
         public bool Unknown0 { get; set; }
 
         public void Read(GamePacketReader reader)
@@ -26,7 +26,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             MasterTitle = reader.ReadWideString();
             CouncilTitle = reader.ReadWideString();
             MemberTitle = reader.ReadWideString();
-            GuildHolomark.Read(reader);
+            GuildStandard.Read(reader);
             Unknown0 = reader.ReadBit();
         }
     }

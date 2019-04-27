@@ -13,7 +13,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
         public ulong CharacterId { get; set; }
         public uint Rank { get; set; }
         public string Name { get; set; }
-        public byte Unknown4 { get; set; } // 2
+        public Sex Sex { get; set; } // 2
         public Class Class { get; set; }
         public Path Path { get; set; }
         public uint Level { get; set; }
@@ -22,7 +22,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
         public uint Unknown7 { get; set; }
         public uint Unknown8 { get; set; }
         public string Note { get; set; }
-        public uint Unknown10 { get; set; }
+        public uint Unknown10 { get; set; } = 1;
         public float LastOnline { get; set; } = -1f;
 
         public void Write(GamePacketWriter writer)
@@ -31,7 +31,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
             writer.Write(CharacterId);
             writer.Write(Rank);
             writer.WriteStringWide(Name);
-            writer.Write(Unknown4, 2u);
+            writer.Write(Sex, 2u);
             writer.Write(Class, 32u);
             writer.Write(Path, 32u);
             writer.Write(Level);

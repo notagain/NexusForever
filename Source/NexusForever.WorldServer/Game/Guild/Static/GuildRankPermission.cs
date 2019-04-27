@@ -6,7 +6,8 @@ namespace NexusForever.WorldServer.Game.Guild.Static
     public enum GuildRankPermission
     {
         Leader                      = -2,
-        None                        = -1,
+        None                        = 0,
+        NoRank                      = 1,
         CreateAndRemoveRank         = 4,
         EditLowerRankPermissions    = 8,
         SpendInfluence              = 16,

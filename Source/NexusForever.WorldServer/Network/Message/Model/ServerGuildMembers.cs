@@ -12,7 +12,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         public ushort GuildRealm { get; set; }
         public ulong GuildId { get; set; }
         public List<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
-        public bool Unknown0 { get; set; }
+        public bool Unknown0 { get; set; } = true;
 
         public void Write(GamePacketWriter writer)
         {

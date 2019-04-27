@@ -11,19 +11,19 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
     {
         public class Rank: IWritable
         {
-            public string RankName { get; set; }
-            public int PermissionMask { get; set; }
-            public long Unknown2 { get; set; }
-            public long Unknown3 { get; set; }
-            public long Unknown4 { get; set; }
+            public string RankName { get; set; } = "";
+            public GuildRankPermission PermissionMask { get; set; } = GuildRankPermission.NoRank;
+            public ulong BankWithdrawalPermissions { get; set; } = 0;
+            public long MoneyWithdrawalLimit { get; set; } = 0;
+            public long RepairLimit { get; set; } = 0;
 
             public void Write(GamePacketWriter writer)
             {
                 writer.WriteStringWide(RankName);
-                writer.Write(PermissionMask);
-                writer.Write(Unknown2);
-                writer.Write(Unknown3);
-                writer.Write(Unknown4);
+                writer.Write((int)PermissionMask);
+                writer.Write(BankWithdrawalPermissions);
+                writer.Write(MoneyWithdrawalLimit);
+                writer.Write(RepairLimit);
             }
         }
 
@@ -69,18 +69,18 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
 
         public ulong GuildId { get; set; }
         public string GuildName { get; set; }
-        public uint Unknown0 { get; set; }
+        public uint Taxes { get; set; }
         public GuildType Type { get; set; } // 4
 
         public List<Rank> Ranks { get; set; } = new List<Rank>(new Rank[10]);
 
-        public GuildStandard Holomark { get; set; } = new GuildStandard();
+        public GuildStandard GuildStandard { get; set; } = new GuildStandard();
 
         public uint TotalMembers { get; set; }
         public uint UsersOnline { get; set; }
         public uint CurrentInfluence { get; set; }
-        public uint DailyBonusRemaining { get; set; }
-        public long Unknown5 { get; set; }
+        public uint DailyInfluenceRemaining { get; set; }
+        public ulong BankCurrency { get; set; }
         public uint Unknown6 { get; set; }
         public uint Unknown7 { get; set; }
 
@@ -90,24 +90,27 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
 
         public List<UnknownStructure1> Unknown10 { get; set; } = new List<UnknownStructure1>();
 
-        public Info Unknown11 { get; set; } = new Info();
+        public Info GuildInfo { get; set; } = new Info();
 
         public void Write(GamePacketWriter writer)
         {
             writer.Write(GuildId);
             writer.WriteStringWide(GuildName);
-            writer.Write(Unknown0);
+            writer.Write(Taxes);
             writer.Write(Type, 4u);
 
+            if (Ranks.Count < 10)
+                for (int i = Ranks.Count; i < 10; i++)
+                    Ranks.Add(new Rank());
             Ranks.ForEach(c => c.Write(writer));
 
-            Holomark.Write(writer);
+            GuildStandard.Write(writer);
 
             writer.Write(TotalMembers);
             writer.Write(UsersOnline);
             writer.Write(CurrentInfluence);
-            writer.Write(DailyBonusRemaining);
-            writer.Write(Unknown5);
+            writer.Write(DailyInfluenceRemaining);
+            writer.Write(BankCurrency);
             writer.Write(Unknown6);
             writer.Write(Unknown7);
 
@@ -118,7 +121,7 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
             writer.Write(Unknown10.Count);
 
             if (Unknown10.Count <= 0)
-                Unknown11.Write(writer);
+                GuildInfo.Write(writer);
             else
                 Unknown10.ForEach(c => c.Write(writer));
         }

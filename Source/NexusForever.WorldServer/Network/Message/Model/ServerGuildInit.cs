@@ -10,13 +10,17 @@ namespace NexusForever.WorldServer.Network.Message.Model
     public class ServerGuildInit : IWritable
     {
         public uint Unknown0 { get; set; }
-        public List<Guild> Guilds { get; set; } = new List<Guild>();
+        public List<GuildData> Guilds { get; set; } = new List<GuildData>();
+        public List<GuildMember> PlayerMemberships { get; set; } = new List<GuildMember>();
+        public List<GuildUnknown> GuildUnknownList { get; set; } = new List<GuildUnknown>();
 
         public void Write(GamePacketWriter writer)
         {
             writer.Write(Guilds.Count);
             writer.Write(Unknown0);
             Guilds.ForEach(w => w.Write(writer));
+            PlayerMemberships.ForEach(w => w.Write(writer));
+            GuildUnknownList.ForEach(w => w.Write(writer));
         }
     }
 }
