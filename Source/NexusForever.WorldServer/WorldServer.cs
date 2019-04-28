@@ -76,6 +76,7 @@ namespace NexusForever.WorldServer
                 MapManager.Update(lastTick);
                 ResidenceManager.Update(lastTick);
                 BuybackManager.Update(lastTick);
+                GuildManager.Update(lastTick);
             });
 
             using (WorldServerEmbeddedWebServer.Initialise())

@@ -1,4 +1,6 @@
-﻿using NexusForever.WorldServer.Game.Guild.Static;
+﻿using NexusForever.WorldServer.Database;
+using NexusForever.WorldServer.Database.Character;
+using NexusForever.WorldServer.Game.Guild.Static;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
@@ -7,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NexusForever.WorldServer.Game.Guild
 {
@@ -23,11 +26,26 @@ namespace NexusForever.WorldServer.Game.Guild
 
         private static readonly ConcurrentDictionary</*guildId*/ ulong, Guild> guilds = new ConcurrentDictionary<ulong, Guild>();
 
-        private static readonly double timeToSave = SaveDuration;
+        private static double timeToSave = SaveDuration;
 
         public static void Initialise()
         {
             nextGuildId = 1ul;
+        }
+
+        public static void Update(double lastTick)
+        {
+            timeToSave -= lastTick;
+            if (timeToSave <= 0d)
+            {
+                var tasks = new List<Task>();
+                foreach (Guild guild in guilds.Values)
+                    tasks.Add(CharacterDatabase.SaveGuild(guild));
+
+                Task.WaitAll(tasks.ToArray());
+
+                timeToSave = SaveDuration;
+            }
         }
 
         public static void RegisterGuild(WorldSession session, ClientGuildRegister clientGuildRegister)
