@@ -692,6 +692,21 @@ namespace NexusForever.WorldServer.Game.Entity
                 SpellInfo = spellInfo
             });
         }
+        public void ResetAppearance()
+        {
+            if (DisplayInfo > 0)
+                DisplayInfo = 0;
+
+            EnqueueToVisible(new ServerEntityVisualUpdate
+            {
+                UnitId = Guid,
+                Race = (byte)Race,
+                Sex = (byte)Sex,
+                DisplayInfo = DisplayInfo,
+                OutfitInfo = OutfitInfo,
+                ItemVisuals = GetAppearance().ToList()
+            }, true);
+        }
 
         public void Save(AuthContext context)
         {

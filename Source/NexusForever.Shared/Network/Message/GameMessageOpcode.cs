@@ -10,9 +10,11 @@ namespace NexusForever.Shared.Network.Message
         ServerPlayerEnteredWorld        = 0x0061,
         ServerAuthEncrypted             = 0x0076,
         ServerLogoutUpdate              = 0x0092,
+        ClientActivateUnitCast          = 0x0097, // not sure about the name - almost the same as 0x00B3, but also initiates 0x07FD
         ServerChangeWorld               = 0x00AD,
         ClientRequestActionSetChanges   = 0x00B1,
         Server00B2                      = 0x00B2, // this triggers the client to send 0xB1
+        ClientActivateUnit              = 0x00B3,
         ServerBuybackItemUpdated        = 0x00BA,
         ClientBuybackItemFromVendor     = 0x00BB,
         ServerBuybackItems              = 0x00BC,
@@ -25,7 +27,12 @@ namespace NexusForever.Shared.Network.Message
         ServerCostumeList               = 0x00D9,
         ServerCharacterCreate           = 0x00DC,
         ServerChannelUpdateLoot         = 0x00DD,
+        ServerDatacubeUpdateList        = 0x00E0,
+        ServerDatacubeUpdate            = 0x00E1,
+        ServerDatacubeVolumeUpdate      = 0x00E2,
+        Server00E3                      = 0x00E3, // start auto attack / attack on right click
         Server00F1                      = 0x00F1, // handler sends 0x00D5 and ClientPlayerMovementSpeedUpdate
+        Server00F2                      = 0x00F2, // log in complete ???
         ServerCharacterFlagsUpdated     = 0x00FE,
         Server0104                      = 0x0104, // Galactic Archive
         ServerHousingPrivacy            = 0x010E,
@@ -46,6 +53,8 @@ namespace NexusForever.Shared.Network.Message
         ClientNonSpellActionSetChanges  = 0x016A,
         ServerShowActionBar             = 0x016C,
         ClientChangeInnate              = 0x016F,
+        ClientChangePvp                 = 0x0172, // pvp setting related
+        ServerChangePvp                 = 0x0173, // pvp setting related
         ClientChangeActiveActionSet     = 0x0174,
         ServerChangeActiveActionSet     = 0x0175,
         ClientToggleWeapons             = 0x0177,
@@ -64,6 +73,7 @@ namespace NexusForever.Shared.Network.Message
         ServerStanceChanged             = 0x019F,
         ServerAbilities                 = 0x01A0,
         ServerAmpList                   = 0x01A3,
+        ServerReputationUpdate          = 0x01A5,
         ServerPathUpdateXP              = 0x01AA,
         ServerPlayerGrantXp             = 0x01AC,
         ServerUnlockVanityPet           = 0x01AE,
@@ -74,6 +84,12 @@ namespace NexusForever.Shared.Network.Message
         ServerChat                      = 0x01C8,
         ClientChatWhisper               = 0x01D4,
         Server0237                      = 0x0237, // UI related, opens or closes different UI windows (bank, barber, ect...)
+        Server023B                      = 0x023B, // ??
+        Server023C                      = 0x023C, // every 2-8 secs an update ?
+        Server023D                      = 0x023D, // UI related, opens or closes different UI windows
+        Server023E                      = 0x023E, // ??
+        Server023F                      = 0x023F, // ??
+        Server0240                      = 0x0240, // ??
         ClientPing                      = 0x0241,
         ClientEncrypted                 = 0x0244,
         ServerCombatLog                 = 0x0247,
@@ -87,12 +103,17 @@ namespace NexusForever.Shared.Network.Message
         ClientPacked                    = 0x025C, // the same as ClientEncrypted except the contents isn't encrypted?
         ServerPlayerCreate              = 0x025E,
         ServerEntityCreate              = 0x0262,
+        Server0269                      = 0x0269, // market place ??
+        Server03AC                      = 0x03AC, // status update broadcast ??
         ClientCharacterDelete           = 0x0352,
         ServerEntityDestory             = 0x0355,
+        ServerQuestClickAccept          = 0x035B,
+        ServerQuestClickIgnore          = 0x035E,
         ServerQuestInit                 = 0x035F,
         ClientEmote                     = 0x037E,
         ClientCostumeItemForget         = 0x038B,
         ClientPackedWorld               = 0x038C,
+        Server0393                      = 0x0393, // in combo with 0793 after madama fays futune button is clicked
         ServerContactsAccountUpdate     = 0x0399,
         ServerContactsAccountList       = 0x03A3,
         ServerContactsAccountStatus     = 0x03A6, // friendship related
@@ -117,6 +138,8 @@ namespace NexusForever.Shared.Network.Message
         ServerRealmEncrypted            = 0x03DC,
         ClientCheat                     = 0x03E0,
         ServerRealmBroadcast            = 0x03E1,
+        Server03EC                      = 0x03EC, // market place ??
+        Server03ED                      = 0x03ED, // market place ??
         ClientItemGenericUnlock         = 0x0400,
         Server0497                      = 0x0497, // guild info
         ClientCastSpell                 = 0x04DB,
@@ -152,7 +175,7 @@ namespace NexusForever.Shared.Network.Message
         ServerPlayerInfoBasicResponse   = 0x0598,
         ServerPlayerInfoFullResponse    = 0x0599,
         ServerAvailableMail             = 0x05A3,
-        Server0635                      = 0x0635,
+        Server0635                      = 0x0635, // mounted ?
         ServerMovementControl           = 0x0636, // handler sends 0x0635 and 0x063A
         ClientEntityCommand             = 0x0637, // bidirectional? packet has both read and write handlers 
         ServerEntityCommand             = 0x0638, // bidirectional? packet has both read and write handlers
@@ -183,6 +206,8 @@ namespace NexusForever.Shared.Network.Message
         ServerRealmList                 = 0x0761, // bidirectional? packet has both read and write handlers
         ServerRealmMessages             = 0x0763,
         ClientTitleSet                  = 0x078E,
+        Server0793                      = 0x0793, // in combo with 0393 after madama fays futune button is clicked
+        Server0799                      = 0x0799, // open leaderboard
         ServerNewRealm                  = 0x07A1,
         ClientRealmList                 = 0x07A4,
         ClientReplayLevelRequest        = 0x07A5,
@@ -212,6 +237,7 @@ namespace NexusForever.Shared.Network.Message
         Server0817                      = 0x0817, // spell related
         ClientStorefrontPurchaseCharacter = 0x082A,
         ClientStorefrontRequestCatalog  = 0x082D,
+        ClientStorefrontHistory         = 0x082E, // store purchase history ??
         ClientSummonVanityPet           = 0x082F,
         Server0854                      = 0x0854, // crafting schematic
         Server0856                      = 0x0856, // tradeskills
