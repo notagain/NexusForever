@@ -103,7 +103,11 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Guid of the <see cref="Vehicle"/> the <see cref="Player"/> is a passenger on.
         /// </summary>
-        public uint VehicleGuid { get; set; }
+        public uint VehicleGuid
+        {
+            get => MovementManager.GetPlatform() ?? 0u;
+            set => MovementManager.SetPlatform(value);
+        }
 
         /// <summary>
         /// Guid of the <see cref="VanityPet"/> currently summoned by the <see cref="Player"/>.
@@ -124,6 +128,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public CostumeManager CostumeManager { get; }
         public PetCustomisationManager PetCustomisationManager { get; }
         public KeybindingManager KeybindingManager { get; }
+        public DatacubeManager DatacubeManager { get; }
 
         public VendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
 
@@ -166,6 +171,7 @@ namespace NexusForever.WorldServer.Game.Entity
             SpellManager    = new SpellManager(this, model);
             PetCustomisationManager = new PetCustomisationManager(this, model);
             KeybindingManager       = new KeybindingManager(this, session.Account, model);
+            DatacubeManager         = new DatacubeManager(this, model);
 
             IgnoreList = ContactManager.GetIgnoreList(model);
 
@@ -222,6 +228,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 logoutManager.Update(lastTick);
             }
             
+            base.Update(lastTick);
             TitleManager.Update(lastTick);
             SpellManager.Update(lastTick);
             CostumeManager.Update(lastTick);
@@ -388,6 +395,7 @@ namespace NexusForever.WorldServer.Game.Entity
             SpellManager.SendInitialPackets();
             PetCustomisationManager.SendInitialPackets();
             KeybindingManager.SendInitialPackets();
+            DatacubeManager.SendInitialPackets();
         }
 
         public ItemProficiency GetItemProficiences()
@@ -407,39 +415,6 @@ namespace NexusForever.WorldServer.Game.Entity
                 MapManager.AddToMap(this, pendingTeleport.Info, pendingTeleport.Vector);
                 pendingTeleport = null;
             }
-        }
-
-        public override ServerEntityCreate BuildCreatePacket()
-        {
-            ServerEntityCreate entityCreate = base.BuildCreatePacket();
-            if (VehicleGuid == 0u)
-                return entityCreate;
-
-            entityCreate.Commands = new Dictionary<EntityCommand, IEntityCommand>
-            {
-                {
-                    EntityCommand.SetPlatform,
-                    new SetPlatformCommand
-                    {
-                        UnitId = VehicleGuid
-                    }
-                },
-                {
-                    EntityCommand.SetPosition,
-                    new SetPositionCommand
-                    {
-                        Position = new Position(new Vector3(0f,0f,0f))
-                    }
-                },
-                {
-                    EntityCommand.SetRotation,
-                    new SetRotationCommand
-                    {
-                        Position = new Position(new Vector3(0f,0f,0f))
-                    }
-                }
-            };
-            return entityCreate;
         }
 
         public override void AddVisible(GridEntity entity)
@@ -787,6 +762,7 @@ namespace NexusForever.WorldServer.Game.Entity
             PetCustomisationManager.Save(context);
             KeybindingManager.Save(context);
             SpellManager.Save(context);
+            DatacubeManager.Save(context);
         }
 
         /// <summary>

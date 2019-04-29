@@ -14,6 +14,7 @@ using NexusForever.WorldServer.Command;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Entity;
+using NexusForever.WorldServer.Game.Entity.Movement;
 using NexusForever.WorldServer.Game.Entity.Network;
 using NexusForever.WorldServer.Game.Housing;
 using NexusForever.WorldServer.Game.Map;
@@ -52,6 +53,7 @@ namespace NexusForever.WorldServer
             SearchManager.Initialise();
             EntityManager.Initialise();
             EntityCommandManager.Initialise();
+            GlobalMovementManager.Initialise();
 
             AssetManager.Initialise();
             GlobalSpellManager.Initialise();
